@@ -1,0 +1,481 @@
+{
+  "schema": "duckiebot_lab.motor_emi/1",
+  "meta": {
+    "created": "2026-07-04T16:26:40",
+    "pattern": "spin",
+    "direction": "cw",
+    "duties": [
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.6,
+      0.8
+    ],
+    "settle_s": 0.1,
+    "dwell_s": 0.4,
+    "baseline_s": 0.3,
+    "rebaseline": true,
+    "rotating_gyro_dps": 5.0,
+    "simulated": true,
+    "sim_mode": "bench",
+    "calibration": null
+  },
+  "verdict": {
+    "status": "MARGINAL",
+    "mag_live_usable": true,
+    "max_safe_duty": 0.28988213483672315,
+    "threshold_deg": 5.0,
+    "operating_duty": null,
+    "error_at_operating_deg": null,
+    "reason": "Worst-case error crosses 5.0 deg around duty 0.29 (13.6 deg at the top duty 0.80). The mag is live-usable only if the in-place spin is kept at/under duty 0.29."
+  },
+  "baseline_noise": {
+    "heading_std_deg": 0.39382125679477653,
+    "field_mag_std_uT": 0.14384347893590319,
+    "field_mag_uT": 45.68124483584595,
+    "horiz_uT": 22.02430384778994,
+    "n_off_windows": 7
+  },
+  "trend": {
+    "heading_err_worst_vs_duty_slope_deg_per_duty": 17.045353288464643,
+    "heading_err_worst_vs_duty_intercept_deg": -0.11705575963946746
+  },
+  "levels": [
+    {
+      "duty": 0.1,
+      "pattern": "spin",
+      "emi_vec_uT": [
+        -0.2809539073680476,
+        0.5054252846288936,
+        0.14535757084230028
+      ],
+      "emi_mag_uT": 0.5962538384016877,
+      "emi_horiz_uT": 0.5782644865522796,
+      "heading_err_measured_deg": 1.4911448450426406,
+      "heading_err_worstcase_deg": 1.5042046897175747,
+      "field_mag_dev_pct": 0.34982388698790784,
+      "gyro_rms_dps": 0.4554548751020114,
+      "rotating": false,
+      "baseline_field_mag_uT": 45.70748342804217,
+      "baseline_horiz_uT": 22.02886417948241
+    },
+    {
+      "duty": 0.2,
+      "pattern": "spin",
+      "emi_vec_uT": [
+        -0.5443225801807579,
+        1.1534145712140091,
+        0.3709326928236649
+      ],
+      "emi_mag_uT": 1.3282482098571975,
+      "emi_horiz_uT": 1.2754027773152425,
+      "heading_err_measured_deg": 3.238374866604488,
+      "heading_err_worstcase_deg": 3.324290019021581,
+      "field_mag_dev_pct": 0.9779917482440195,
+      "gyro_rms_dps": 0.5810243698813634,
+      "rotating": false,
+      "baseline_field_mag_uT": 45.67574209185666,
+      "baseline_horiz_uT": 21.994534418411824
+    },
+    {
+      "duty": 0.3,
+      "pattern": "spin",
+      "emi_vec_uT": [
+        -0.8043277689790216,
+        1.818286055469871,
+        0.6094033518873658
+      ],
+      "emi_mag_uT": 2.0795383585686777,
+      "emi_horiz_uT": 1.988242273835599,
+      "heading_err_measured_deg": 4.982950609938825,
+      "heading_err_worstcase_deg": 5.188631563670534,
+      "field_mag_dev_pct": 1.666110515183256,
+      "gyro_rms_dps": 0.48785214345629524,
+      "rotating": false,
+      "baseline_field_mag_uT": 45.65270538855925,
+      "baseline_horiz_uT": 21.985323705296697
+    },
+    {
+      "duty": 0.4,
+      "pattern": "spin",
+      "emi_vec_uT": [
+        -1.0460587094893974,
+        2.3050314739091196,
+        0.7275738798799978
+      ],
+      "emi_mag_uT": 2.633775364394979,
+      "emi_horiz_uT": 2.531286020861782,
+      "heading_err_measured_deg": 6.310083339303048,
+      "heading_err_worstcase_deg": 6.5993757941032944,
+      "field_mag_dev_pct": 2.034338906091523,
+      "gyro_rms_dps": 0.5134463925288496,
+      "rotating": false,
+      "baseline_field_mag_uT": 45.70492001867407,
+      "baseline_horiz_uT": 22.025292721610118
+    },
+    {
+      "duty": 0.6,
+      "pattern": "spin",
+      "emi_vec_uT": [
+        -1.710774979122057,
+        3.4336300855337534,
+        1.096103990484714
+      ],
+      "emi_mag_uT": 3.9897381557477076,
+      "emi_horiz_uT": 3.8362177458367253,
+      "heading_err_measured_deg": 9.528951357634753,
+      "heading_err_worstcase_deg": 10.028009110107595,
+      "field_mag_dev_pct": 3.0362875125079585,
+      "gyro_rms_dps": 0.45413830921237064,
+      "rotating": false,
+      "baseline_field_mag_uT": 45.70829354572279,
+      "baseline_horiz_uT": 22.03082162291735
+    },
+    {
+      "duty": 0.8,
+      "pattern": "spin",
+      "emi_vec_uT": [
+        -2.1465505793887214,
+        4.691575871062282,
+        1.5841026933990463
+      ],
+      "emi_mag_uT": 5.39703111785007,
+      "emi_horiz_uT": 5.159318127796333,
+      "heading_err_measured_deg": 12.469444472147472,
+      "heading_err_worstcase_deg": 13.562002157857757,
+      "field_mag_dev_pct": 4.622349442362254,
+      "gyro_rms_dps": 0.4491434565528985,
+      "rotating": false,
+      "baseline_field_mag_uT": 45.66130712937706,
+      "baseline_horiz_uT": 22.001594079577778
+    }
+  ],
+  "windows": [
+    {
+      "label": "baseline",
+      "pattern": "off",
+      "duty": 0.0,
+      "t0": 317.181910012,
+      "t1": 317.444379863,
+      "n": 14,
+      "rate_hz": 53.33945954806232,
+      "mag_mean_uT": [
+        18.059151176524434,
+        12.607022597077032,
+        40.02485034839336
+      ],
+      "field_mag_mean_uT": 45.684775371106106,
+      "field_mag_std_uT": 0.16330692585669204,
+      "heading_mean_deg": 34.91845811949241,
+      "heading_std_deg": 0.3687778207199319,
+      "gyro_mean_dps": [
+        -0.052003217278326554,
+        0.034881955719248736,
+        0.014087869216584096
+      ],
+      "gyro_rms_dps": 0.451758031039259,
+      "mag_ok": true
+    },
+    {
+      "label": "d=0.10",
+      "pattern": "spin",
+      "duty": 0.1,
+      "t0": 317.565402155,
+      "t1": 317.949428646,
+      "n": 20,
+      "rate_hz": 52.07974050936171,
+      "mag_mean_uT": [
+        17.763436712984575,
+        13.141517409103672,
+        40.193554110673766
+      ],
+      "field_mag_mean_uT": 45.8673791232145,
+      "field_mag_std_uT": 0.1253346145041651,
+      "heading_mean_deg": 36.49385873841652,
+      "heading_std_deg": 0.460685286176157,
+      "gyro_mean_dps": [
+        0.02345704506176251,
+        0.09993269056983177,
+        0.027774611258734507
+      ],
+      "gyro_rms_dps": 0.4554548751020114,
+      "mag_ok": true
+    },
+    {
+      "label": "baseline",
+      "pattern": "off",
+      "duty": 0.0,
+      "t0": 317.969607335,
+      "t1": 318.252065696,
+      "n": 15,
+      "rate_hz": 53.10517255320138,
+      "mag_mean_uT": [
+        18.02963006418081,
+        12.665161651872525,
+        40.07154273126957
+      ],
+      "field_mag_mean_uT": 45.73019148497823,
+      "field_mag_std_uT": 0.15488161536813208,
+      "heading_mean_deg": 35.08724181392904,
+      "heading_std_deg": 0.315478443450895,
+      "gyro_mean_dps": [
+        -0.05990573389559363,
+        -0.013284127268846356,
+        -0.029156262839334788
+      ],
+      "gyro_rms_dps": 0.5074775782848568,
+      "mag_ok": true
+    },
+    {
+      "label": "d=0.20",
+      "pattern": "spin",
+      "duty": 0.2,
+      "t0": 318.373181591,
+      "t1": 318.757535068,
+      "n": 20,
+      "rate_hz": 52.035434038757224,
+      "mag_mean_uT": [
+        17.461918935626382,
+        13.784123607413273,
+        40.40191472198739
+      ],
+      "field_mag_mean_uT": 46.12244708046424,
+      "field_mag_std_uT": 0.10753044238099833,
+      "heading_mean_deg": 38.28660720982856,
+      "heading_std_deg": 0.3903002871606472,
+      "gyro_mean_dps": [
+        0.045152336462903224,
+        0.08763050972827896,
+        -0.0893984053165128
+      ],
+      "gyro_rms_dps": 0.5810243698813634,
+      "mag_ok": true
+    },
+    {
+      "label": "baseline",
+      "pattern": "off",
+      "duty": 0.0,
+      "t0": 318.777717114,
+      "t1": 319.06040895,
+      "n": 15,
+      "rate_hz": 53.06131302638185,
+      "mag_mean_uT": [
+        17.982852967433466,
+        12.596256420526002,
+        39.99042132705789
+      ],
+      "field_mag_mean_uT": 45.62129269873509,
+      "field_mag_std_uT": 0.11590623967626952,
+      "heading_mean_deg": 35.00966994501209,
+      "heading_std_deg": 0.2306743363307973,
+      "gyro_mean_dps": [
+        -0.007074898967281152,
+        -0.013328024053499673,
+        0.07542071338788475
+      ],
+      "gyro_rms_dps": 0.5557043976055674,
+      "mag_ok": true
+    },
+    {
+      "label": "d=0.30",
+      "pattern": "spin",
+      "duty": 0.3,
+      "t0": 319.181531726,
+      "t1": 319.564921681,
+      "n": 20,
+      "rate_hz": 52.16620764099264,
+      "mag_mean_uT": [
+        17.197069600391103,
+        14.439860884971742,
+        40.6190863829857
+      ],
+      "field_mag_mean_uT": 46.41332991350367,
+      "field_mag_std_uT": 0.13166726265434342,
+      "heading_mean_deg": 40.018944579157846,
+      "heading_std_deg": 0.31809505414710093,
+      "gyro_mean_dps": [
+        0.0356192026566784,
+        -0.017778730030069995,
+        -0.0898901200533066
+      ],
+      "gyro_rms_dps": 0.48785214345629524,
+      "mag_ok": true
+    },
+    {
+      "label": "baseline",
+      "pattern": "off",
+      "duty": 0.0,
+      "t0": 319.585101631,
+      "t1": 319.867918932,
+      "n": 15,
+      "rate_hz": 53.037773668587526,
+      "mag_mean_uT": [
+        18.01994177130678,
+        12.64689323847774,
+        40.028944735138786
+      ],
+      "field_mag_mean_uT": 45.684118078383406,
+      "field_mag_std_uT": 0.14838646529503347,
+      "heading_mean_deg": 35.06312418704766,
+      "heading_std_deg": 0.5848758099069189,
+      "gyro_mean_dps": [
+        0.05787280568565951,
+        0.014851736439259581,
+        0.09226612314405362
+      ],
+      "gyro_rms_dps": 0.5000146096822548,
+      "mag_ok": true
+    },
+    {
+      "label": "d=0.40",
+      "pattern": "spin",
+      "duty": 0.4,
+      "t0": 319.989108647,
+      "t1": 320.352628484,
+      "n": 19,
+      "rate_hz": 52.26674878818873,
+      "mag_mean_uT": [
+        16.97998619381251,
+        14.961066580400997,
+        40.77482120595529
+      ],
+      "field_mag_mean_uT": 46.63471298861197,
+      "field_mag_std_uT": 0.149076190584553,
+      "heading_mean_deg": 41.38266771278745,
+      "heading_std_deg": 0.41191292874547863,
+      "gyro_mean_dps": [
+        -0.042633100638973596,
+        -0.04445281800787719,
+        0.09752576989765942
+      ],
+      "gyro_rms_dps": 0.5134463925288496,
+      "mag_ok": true
+    },
+    {
+      "label": "baseline",
+      "pattern": "off",
+      "duty": 0.0,
+      "t0": 320.372802883,
+      "t1": 320.65556207,
+      "n": 15,
+      "rate_hz": 53.048674241670014,
+      "mag_mean_uT": [
+        18.032148035297038,
+        12.665176974506014,
+        40.06554991701181
+      ],
+      "field_mag_mean_uT": 45.72572195896474,
+      "field_mag_std_uT": 0.1281086778010316,
+      "heading_mean_deg": 35.08265217751841,
+      "heading_std_deg": 0.31428936038394123,
+      "gyro_mean_dps": [
+        0.11801046218387479,
+        -0.010708545422140335,
+        0.09129709794608945
+      ],
+      "gyro_rms_dps": 0.4805171280218979,
+      "mag_ok": true
+    },
+    {
+      "label": "d=0.60",
+      "pattern": "spin",
+      "duty": 0.6,
+      "t0": 320.776682869,
+      "t1": 321.160613599,
+      "n": 20,
+      "rate_hz": 52.09273037352682,
+      "mag_mean_uT": [
+        16.332296299953363,
+        16.07501767547048,
+        41.144209372588875
+      ],
+      "field_mag_mean_uT": 47.09612875483205,
+      "field_mag_std_uT": 0.12566035593413105,
+      "heading_mean_deg": 44.54491441703914,
+      "heading_std_deg": 0.30293863055993386,
+      "gyro_mean_dps": [
+        0.02063997968651127,
+        0.025402941411282583,
+        0.06159010752667163
+      ],
+      "gyro_rms_dps": 0.45413830921237064,
+      "mag_ok": true
+    },
+    {
+      "label": "baseline",
+      "pattern": "off",
+      "duty": 0.0,
+      "t0": 321.180783469,
+      "t1": 321.463428539,
+      "n": 15,
+      "rate_hz": 53.07009246614473,
+      "mag_mean_uT": [
+        18.053994522853806,
+        12.617598205367441,
+        40.030660847196515
+      ],
+      "field_mag_mean_uT": 45.69086513248084,
+      "field_mag_std_uT": 0.16038634660017062,
+      "heading_mean_deg": 34.94921729226405,
+      "heading_std_deg": 0.4402213664504464,
+      "gyro_mean_dps": [
+        -0.05448277468420759,
+        0.1361632503577987,
+        -0.03443884229831945
+      ],
+      "gyro_rms_dps": 0.5395010474044105,
+      "mag_ok": true
+    },
+    {
+      "label": "d=0.80",
+      "pattern": "spin",
+      "duty": 0.8,
+      "t0": 321.584534812,
+      "t1": 321.96820921,
+      "n": 20,
+      "rate_hz": 52.12753340920318,
+      "mag_mean_uT": [
+        15.860054214974001,
+        17.334056870539616,
+        41.59446395773572
+      ],
+      "field_mag_mean_uT": 47.771932304847134,
+      "field_mag_std_uT": 0.15345075135241942,
+      "heading_mean_deg": 47.5422307629251,
+      "heading_std_deg": 0.4077678297691691,
+      "gyro_mean_dps": [
+        0.02029756476638883,
+        0.03906853213484988,
+        -0.07414185662362358
+      ],
+      "gyro_rms_dps": 0.4491434565528985,
+      "mag_ok": true
+    },
+    {
+      "label": "baseline",
+      "pattern": "off",
+      "duty": 0.0,
+      "t0": 321.98836837,
+      "t1": 322.271247111,
+      "n": 15,
+      "rate_hz": 53.026254100871114,
+      "mag_mean_uT": [
+        17.95921506587164,
+        12.667363793587226,
+        39.99006168147683
+      ],
+      "field_mag_mean_uT": 45.63174912627328,
+      "field_mag_std_uT": 0.13592808195399297,
+      "heading_mean_deg": 35.19618978921915,
+      "heading_std_deg": 0.502431660320505,
+      "gyro_mean_dps": [
+        0.014643505259818588,
+        -0.018102879113636165,
+        0.02188822132354559
+      ],
+      "gyro_rms_dps": 0.4268586574346126,
+      "mag_ok": true
+    }
+  ]
+}

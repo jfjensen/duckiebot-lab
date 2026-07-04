@@ -1,0 +1,35 @@
+======================================================================
+MOTOR-EMI CHARACTERIZATION  --  Duckiebot HUT v3.1
+======================================================================
+
+VERDICT:  MARGINAL   (mag live-usable during spin: YES)
+
+  Worst-case error crosses 5.0 deg around duty 0.29 (13.6 deg at the
+  top duty 0.80). The mag is live-usable only if the in-place spin is
+  kept at/under duty 0.29.
+
+  max safe in-place spin duty : 0.29
+  error threshold             : 5.0 deg
+
+At-rest magnetometer baseline (motors off):
+  horizontal field |H|   : 22.0 uT
+  total field |B|        : 45.7 uT (+/- 0.14)
+  heading noise (std)    : 0.39 deg over 7 off-windows
+
+Disturbance vs motor duty (pattern = in-place spin):
+  duty | EMI |B|  EMI |H| | head.err  worst | dB/B%  | gyroRMS
+  -----+----------------+-----------------+--------+--------
+  0.10 |   0.60    0.58 |     1.5     1.5 |    0.3 |    0.5
+  0.20 |   1.33    1.28 |     3.2     3.3 |    1.0 |    0.6
+  0.30 |   2.08    1.99 |     5.0     5.2 |    1.7 |    0.5
+  0.40 |   2.63    2.53 |     6.3     6.6 |    2.0 |    0.5
+  0.60 |   3.99    3.84 |     9.5    10.0 |    3.0 |    0.5
+  0.80 |   5.40    5.16 |    12.5    13.6 |    4.6 |    0.4
+
+Trend: worst-case error ~= 17.0 deg/duty * duty + -0.1 deg
+
+Method: EMI vector = (field with motors on) - (bracketing
+motors-off baseline). Worst-case heading error = asin(|EMI_h|/|H|),
+the error that occurs when the EMI vector is perpendicular to the
+Earth field -- which the in-place spin sweeps through every turn.
+======================================================================
