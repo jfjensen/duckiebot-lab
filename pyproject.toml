@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=77.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,7 +8,6 @@ version = "0.1.0"
 description = "Application layer (experiments, motion, telemetry) for the pyhut Duckiebot, built on the pyhut HAL."
 readme = "README.md"
 license = "MIT"
-license-files = ["LICENSE"]
 authors = [{ name = "Jes Fink-Jensen" }]
 # The on-robot code targets the stock JetPack image (Python 3.6), so the runtime
 # is kept std-lib and 3.6-safe. External deps are allowed app-side but stay
