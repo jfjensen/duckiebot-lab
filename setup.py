@@ -12,9 +12,9 @@ from setuptools import setup, find_packages
 
 setup(
     name="duckiebot-lab",
-    version="0.1.0",
-    description="Application layer (experiments, motion, telemetry) for the "
-                "pyhut Duckiebot, built on the pyhut HAL.",
+    version="0.4.0",
+    description="Application layer for the pyhut Duckiebot: experiments, "
+                "motion primitives, demos.",
     author="Jes Fink-Jensen",
     license="MIT",
     package_dir={"": "src"},
@@ -30,6 +30,7 @@ setup(
     entry_points={
         "console_scripts": [
             "duckiebot-emi = duckiebot_lab.experiments.motor_emi:main",
+            "duckiebot-rotate = duckiebot_lab.motion.demo:main",
         ],
     },
 )
