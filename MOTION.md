@@ -56,6 +56,25 @@ hard-coded:
   agrees with the gyro. Until then it runs gyro-only. Same "measure, don't
   assume" idea as the wheel sign.
 
+## Live stall detection (a caught caster, or similar)
+
+Encoder ticks and gyro heading should move together; if they don't -- wheels
+ticking while heading barely changes -- something mechanical is fighting the
+turn, most commonly a binding support caster dragging on the pivot. The loop
+watches the *growth* of `encoder_disagreement()` over a short rolling window
+(`stall_window_s`, default 0.4 s), not a fixed threshold on the cumulative
+total (which would also trip from ordinary sensor noise late in a long turn),
+and requires it over `stall_confirm_windows` (default 2) consecutive windows
+before acting, so one noisy tick can't trigger it.
+
+On a confirmed stall it tries a brief reverse pulse (opposite whichever way it
+was just driving) to break the bind free, then resumes the turn -- up to
+`stall_max_nudges` times (default 2; 0 disables recovery but detection/abort
+still applies). If it's still stalled after that, it stops and returns
+`reached=False` with a `"stall detected"` reason instead of grinding through
+the full timeout. `RotateResult.stall_nudges` reports how many attempts were
+used; the CLI's `--stall-nudges N` overrides the default.
+
 ## Compensating the asymmetric drive paths
 
 Left is all-PCA channels; right is GPIO direction + PCA PWM, and the driver
@@ -110,13 +129,15 @@ duckiebot-rotate --simulate --angle -120 --plant-sign -1 --emi live
 # on the robot:
 sudo duckiebot-rotate --angle 90 --rate 45 --calibration calib.json \
                       --emi-verdict emi_run.json
+# suspect a binding caster: allow more recovery attempts before giving up
+sudo duckiebot-rotate --angle 90 --rate 45 --calibration calib.json --stall-nudges 4
 ```
 
 ## `RotateResult` fields
 
 `requested_deg`, `achieved_deg`, `error_deg`, `reached`, `duration_s`,
 `n_samples`, `mag_fused`, `dir_sign`, `enc_magnitude_deg`, `enc_disagreement`,
-`gyro_bias_dps`, `reason`.
+`gyro_bias_dps`, `stall_nudges`, `reason`.
 
 ## Measure these on your bot
 

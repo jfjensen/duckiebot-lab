@@ -42,6 +42,10 @@ class _SimState(object):
         self.enc_right = 0
         self._enc_l_acc = 0.0        # fractional tick accumulators
         self._enc_r_acc = 0.0
+        # Optional simulated caster/wheel bind -- see SimConfig.bind_deg.
+        self._bind_crossed = False
+        self._bound = False
+        self._bind_free_progress = 0.0
 
     def set_target(self, left, right):
         with self.lock:
@@ -64,13 +68,34 @@ class _SimState(object):
         rs = self._wheel_speed(right, c.right_gain)
 
         # In-place yaw rate ~ (right - left) scaled; plant_sign is the mounting.
-        yaw_rate_dps = c.plant_sign * (rs - ls) * c.yaw_scale   # deg/s (true)
+        yaw_rate_dps = c.plant_sign * (rs - ls) * c.yaw_scale   # deg/s (commanded)
         dtheta_deg = yaw_rate_dps * dt
-        self.true_heading += dtheta_deg
 
-        # Encoders (up-only): for a pure in-place spin each wheel travels an arc
-        # of |dtheta_rad| * (track_width/2). Deriving ticks from the yaw keeps the
-        # magnitude cross-check physically consistent with the true turn.
+        # Optional simulated caster/wheel bind: once the true heading first
+        # reaches bind_deg, the BODY stops responding to further drive -- the
+        # wheels still turn (ticks keep accruing from the commanded motion
+        # below) but yaw doesn't -- until bind_free_reverse_deg of *reverse*
+        # commanded rotation has accumulated, which frees it again. Mirrors a
+        # caught caster: the encoders see motion the gyro doesn't.
+        effective_dtheta = dtheta_deg
+        if c.bind_deg is not None:
+            if not self._bind_crossed and (
+                    (self.true_heading < c.bind_deg <= self.true_heading + dtheta_deg)
+                    or (self.true_heading > c.bind_deg >= self.true_heading + dtheta_deg)):
+                self._bind_crossed = True
+                self._bound = True
+            if self._bound:
+                if dtheta_deg < 0.0:
+                    self._bind_free_progress += -dtheta_deg
+                    if self._bind_free_progress >= c.bind_free_reverse_deg:
+                        self._bound = False
+                effective_dtheta = 0.0
+        self.true_heading += effective_dtheta
+
+        # Encoders (up-only): driven from the COMMANDED rotation, not the
+        # possibly bind-blocked true one -- a caught caster still lets the
+        # driven wheels themselves turn. For a pure in-place spin each wheel
+        # travels an arc of |dtheta_rad| * (track_width/2).
         arc = abs(math.radians(dtheta_deg)) * (c.track_width_m / 2.0)   # metres
         ticks = (arc / c.wheel_circumference_m) * c.ticks_per_rev
         self._enc_l_acc += ticks
@@ -80,9 +105,10 @@ class _SimState(object):
         self.enc_left += add_l
         self.enc_right += add_r
 
-        # Gyro-z reported = true rate + bias + noise (sign already in true rate).
+        # Gyro-z reports the TRUE (possibly bind-blocked) rate + bias + noise.
+        true_rate_dps = effective_dtheta / dt if dt > 0.0 else 0.0
         noise = c.rng_gyro()
-        gyro_z = yaw_rate_dps + c.gyro_bias_dps + noise
+        gyro_z = true_rate_dps + c.gyro_bias_dps + noise
 
         # Mag: Earth field rotated by true heading + optional EMI (sensor-frame).
         th = math.radians(self.true_heading)
@@ -111,6 +137,9 @@ class SimConfig(object):
         self.track_width_m = 0.10
         self.wheel_circumference_m = math.pi * 0.067
         self.ticks_per_rev = 135
+        # Simulated caster/wheel bind (see _SimState.advance); None disables it.
+        self.bind_deg = None
+        self.bind_free_reverse_deg = 3.0
         import random
         self._r = random.Random(12345)
 

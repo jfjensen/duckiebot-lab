@@ -95,6 +95,26 @@ class RotateConfig(object):
         self.bias_estimate_s = 0.4
         self.bias_still_std_max = 3.0    # deg/s; above this, stillness is suspect
 
+        # Live stall detection: wheels ticking but heading not moving, e.g. a
+        # caught caster wheel. Checked as the GROWTH of encoder/gyro
+        # disagreement over a short rolling window (not a fixed threshold on
+        # the cumulative total, which would also trip from ordinary sensor
+        # noise late in a long turn), confirmed over consecutive windows so a
+        # single noisy tick can't trigger it.
+        self.stall_window_s = 0.4          # rolling window length
+        self.stall_min_enc_deg = 5.0       # ignore the check below this much
+                                            # encoder progress *within* the window
+        self.stall_delta_deg = 12.0        # disagreement growth over one window
+                                            # that counts toward a stall
+        self.stall_confirm_windows = 2     # consecutive over-threshold windows
+                                            # required before acting
+        self.stall_max_nudges = 2          # reverse-and-retry attempts before
+                                            # giving up (0 disables recovery,
+                                            # but detection/abort still applies)
+        self.stall_nudge_base = 0.5        # wheel magnitude during a nudge pulse
+        self.stall_nudge_time_s = 0.25     # duration of one nudge pulse
+        self.stall_settle_s = 0.15         # pause after a nudge before resuming
+
 
 # Outcome of a rotate call. Everything a caller/telemetry/lidar-demo needs.
 RotateResult = namedtuple("RotateResult", [
@@ -109,6 +129,7 @@ RotateResult = namedtuple("RotateResult", [
     "enc_magnitude_deg", # independent encoder magnitude estimate
     "enc_disagreement",  # |gyro heading| - |encoder magnitude|
     "gyro_bias_dps",     # residual bias removed before the spin
+    "stall_nudges",      # number of live-stall recovery nudges applied
     "reason",            # short human string
 ])
 
@@ -279,6 +300,15 @@ class MotionPrimitives(object):
         n = 0
         t0 = time.monotonic()
 
+        # Live stall (caster/wheel bind) bookkeeping -- see RotateConfig.
+        last_u = 0.0
+        stall_win_t0 = t0
+        stall_win_dis0 = 0.0
+        stall_win_enc0 = 0.0
+        stall_confirm = 0
+        stall_nudges = 0
+        stalled_out = False
+
         # Consume the FULL sample stream for heading, not just whatever the
         # control tick happens to poll: an integral that skips intervals
         # under-/over-counts. The estimator runs at sensor rate off the
@@ -329,6 +359,35 @@ class MotionPrimitives(object):
                 else:
                     in_tol = 0
 
+                # --- live stall check: wheels ticking, heading isn't moving ---
+                if now - stall_win_t0 >= cfg.stall_window_s:
+                    disagreement = tracker.encoder_disagreement()
+                    enc_progress = tracker.enc_magnitude - stall_win_enc0
+                    delta = disagreement - stall_win_dis0
+                    if (enc_progress >= cfg.stall_min_enc_deg
+                            and delta >= cfg.stall_delta_deg):
+                        stall_confirm += 1
+                    else:
+                        stall_confirm = 0
+                    stall_win_t0 = now
+                    stall_win_dis0 = disagreement
+                    stall_win_enc0 = tracker.enc_magnitude
+
+                    if stall_confirm >= cfg.stall_confirm_windows:
+                        stall_confirm = 0
+                        if stall_nudges < cfg.stall_max_nudges:
+                            stall_nudges += 1
+                            self._stall_nudge(cfg, last_u)
+                        else:
+                            self.drivetrain.stop()
+                            reached = False
+                            stalled_out = True
+                            reason = (
+                                "stall detected: wheels turning but heading "
+                                "isn't (possible caster/wheel bind) after "
+                                "%d nudge(s)" % stall_nudges)
+                            break
+
                 # --- outer loop: heading error -> desired angular rate ---
                 rate_ref = cfg.kp_pos * error
                 if rate_ref > rate_dps:
@@ -376,6 +435,7 @@ class MotionPrimitives(object):
 
                 # --- map to wheels: +base == +heading via dir_sign; trim L/R ---
                 u = base * self.dir_sign
+                last_u = u
                 left = +u * cfg.left_trim
                 right = -u * cfg.right_trim
                 self.drivetrain.set_target(left, right)
@@ -394,6 +454,9 @@ class MotionPrimitives(object):
         if s is not None:
             tracker.update(s, 1 if ang_diff(target, tracker.heading) >= 0 else -1)
 
+        stall_note = ("; recovered after %d stall nudge(s)" % stall_nudges
+                      if stall_nudges and not stalled_out else "")
+
         achieved = tracker.heading
         result = RotateResult(
             requested_deg=float(angle_deg),
@@ -407,11 +470,33 @@ class MotionPrimitives(object):
             enc_magnitude_deg=tracker.enc_magnitude,
             enc_disagreement=tracker.encoder_disagreement(),
             gyro_bias_dps=bias,
-            reason=(reason + ("; BIAS SUSPECT (std %.1f dps)" % bias_std
-                              if bias_suspect else "")
+            stall_nudges=stall_nudges,
+            reason=(reason + stall_note
+                    + ("; BIAS SUSPECT (std %.1f dps)" % bias_std
+                       if bias_suspect else "")
                     + "; " + mag_reason),
         )
         return result
+
+    def _stall_nudge(self, cfg, last_u):
+        """Brief reverse pulse, opposite whichever way we were just driving, to
+        try to break a bound wheel/caster free.
+
+        Keeps the watchdog fed for the pulse duration. Does not touch the
+        heading tracker directly -- the samples generated during the pulse sit
+        in the caller's subscribed queue and are drained on its next pass
+        through the loop, same as any other tick.
+        """
+        sign = 1.0 if last_u >= 0.0 else -1.0
+        u = -sign * cfg.stall_nudge_base
+        left = +u * cfg.left_trim
+        right = -u * cfg.right_trim
+        end = time.monotonic() + cfg.stall_nudge_time_s
+        while time.monotonic() < end:
+            self.drivetrain.set_target(left, right)
+            time.sleep(1.0 / cfg.loop_hz)
+        self.drivetrain.stop()
+        time.sleep(cfg.stall_settle_s)
 
     # -- future seam: drive_straight reuses the same machinery --
     def drive_straight(self, distance_m, speed=0.4, cfg=None):

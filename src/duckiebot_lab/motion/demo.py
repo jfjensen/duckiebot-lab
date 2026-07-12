@@ -63,15 +63,22 @@ def main(argv=None):
                     help="(sim) mounting sign to exercise auto-detect")
     ap.add_argument("--emi", choices=("off", "live", "bad"), default="off",
                     help="(sim) inject magnetometer EMI")
+    ap.add_argument("--stall-nudges", type=int, default=None,
+                    help="live-stall recovery attempts before giving up "
+                         "(wheels ticking but heading not moving, e.g. a "
+                         "caught caster); default from RotateConfig")
     args = ap.parse_args(argv)
 
-    from .primitives import MotionPrimitives
+    from .primitives import MotionPrimitives, RotateConfig
 
     robot = _build_sim_robot(args) if args.simulate else _build_real_robot(args)
     policy = _mag_policy(args)
+    cfg = RotateConfig()
+    if args.stall_nudges is not None:
+        cfg.stall_max_nudges = args.stall_nudges
     try:
         mp = MotionPrimitives(robot, mag_policy=policy, dir_sign=args.dir_sign)
-        result = mp.rotate(args.angle, rate_dps=args.rate)
+        result = mp.rotate(args.angle, rate_dps=args.rate, cfg=cfg)
     finally:
         robot.close()
 
@@ -86,6 +93,7 @@ def main(argv=None):
     print("  mag fused live   : %s" % result.mag_fused)
     print("  enc magnitude    : %.1f deg" % result.enc_magnitude_deg)
     print("  enc disagreement : %.1f deg" % result.enc_disagreement)
+    print("  stall nudges     : %d" % result.stall_nudges)
     print("  reason           : %s" % result.reason)
     if args.simulate:
         print("  (sim true heading: %.2f deg)" % robot.true_heading)

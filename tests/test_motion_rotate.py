@@ -179,6 +179,36 @@ def test_rotate_times_out_when_stalled_without_hanging():
         assert r.duration_s < 6.0
 
 
+def test_rotate_recovers_from_transient_bind_with_nudge():
+    # Caster catches at 20 deg true heading; a couple degrees of reverse
+    # travel (well within one nudge pulse) frees it again.
+    cfg = SimConfig(); cfg.bind_deg = 20.0; cfg.bind_free_reverse_deg = 3.0
+    with SimRobot(cfg) as bot:
+        mp = MotionPrimitives(bot, dir_sign=-1)   # skip the probe (also bind-prone)
+        c = fast_cfg(); c.stall_max_nudges = 3
+        r = mp.rotate(90.0, rate_dps=60.0, cfg=c)
+        assert r.reached, r.reason
+        assert r.stall_nudges >= 1
+        assert "recovered after" in r.reason
+
+
+def test_rotate_gives_up_after_max_nudges_on_permanent_bind():
+    # Bind that never frees (reverse threshold effectively unreachable): the
+    # primitive must give up after stall_max_nudges, not grind to the full
+    # timeout.
+    cfg = SimConfig(); cfg.bind_deg = 15.0; cfg.bind_free_reverse_deg = 1e6
+    with SimRobot(cfg) as bot:
+        mp = MotionPrimitives(bot, dir_sign=-1)
+        c = fast_cfg(); c.stall_max_nudges = 1; c.timeout_margin = 20.0
+        r = mp.rotate(90.0, rate_dps=60.0, cfg=c)
+        assert r.reached is False
+        assert "stall detected" in r.reason
+        assert r.stall_nudges == 1
+        # would-be timeout at this margin is tens of seconds; a stall give-up
+        # must finish in a couple of seconds, not grind through it.
+        assert r.duration_s < 5.0
+
+
 def test_bias_rezero_removes_offset():
     # A large constant gyro bias must be measured out; otherwise the integral
     # would run away and the turn would badly overshoot.
