@@ -1,40 +1,30 @@
 [build-system]
-requires = ["setuptools>=77.0", "wheel"]
+requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "duckiebot-lab"
-version = "0.1.0"
-description = "Application layer (experiments, motion, telemetry) for the pyhut Duckiebot, built on the pyhut HAL."
-readme = "README.md"
-license = "MIT"
-authors = [{ name = "Jes Fink-Jensen" }]
-# The on-robot code targets the stock JetPack image (Python 3.6), so the runtime
-# is kept std-lib and 3.6-safe. External deps are allowed app-side but stay
-# optional so nothing extra has to be installed on the robot to run a diagnostic.
+version = "0.4.0"
+description = "Application layer for the pyhut Duckiebot: experiments, motion primitives, demos."
 requires-python = ">=3.6"
-keywords = ["duckiebot", "pyhut", "jetson-nano", "magnetometer", "emi", "diagnostic"]
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "Operating System :: POSIX :: Linux",
-    "Topic :: System :: Hardware :: Hardware Drivers",
-]
+license = { file = "LICENSE" }
 
-# pyhut is the one-way dependency. It isn't on PyPI, so reference the repo
-# directly. For local development, `pip install -e ../pyhut` instead and drop
-# this line, or install pyhut first.
+# pyhut is the HAL dependency, one-way. It is not on PyPI, so reference the repo
+# directly. For local development, `pip install -e ../pyhut` and this resolves as
+# already-satisfied.
 dependencies = [
     "pyhut @ git+https://github.com/jfjensen/pyhut.git",
 ]
 
 [project.optional-dependencies]
-# Off-robot only: the optional PNG plot in the saved run.
+# Off-robot only (plots for demos/experiments).
 plot = ["matplotlib"]
 # Test tooling.
 test = ["pytest"]
 
 [project.scripts]
 duckiebot-emi = "duckiebot_lab.experiments.motor_emi:main"
+duckiebot-rotate = "duckiebot_lab.motion.demo:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
